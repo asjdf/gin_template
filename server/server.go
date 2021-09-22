@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	"sync"
 )
 
 var Instance *Server
@@ -57,4 +58,18 @@ func StartService() {
 		go mi.Instance.Start(Instance)
 	}
 	logger.Info("tasks running")
+}
+
+// Stop 停止所有服务
+// 调用此函数并不会使Bot离线
+func Stop() {
+	logger.Warn("stopping ...")
+	wg := sync.WaitGroup{}
+	for _, mi := range modules {
+		wg.Add(1)
+		mi.Instance.Stop(Instance, &wg)
+	}
+	wg.Wait()
+	logger.Info("stopped")
+	modules = make(map[string]ModuleInfo)
 }
