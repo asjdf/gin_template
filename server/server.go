@@ -26,12 +26,14 @@ func Init() {
 
 // Run 正式开启服务
 func Run() {
-	logger.Info("http engine starting...")
-	err := Instance.HttpEngine.Run("127.0.0.1:9955")
-	if err != nil {
-		panic(err)
-	}
-	logger.Info("http engine running...")
+	go func() {
+		logger.Info("http engine starting...")
+		if err := Instance.HttpEngine.Run("127.0.0.1:9955"); err != nil {
+			logger.Fatal()
+		}else {
+			logger.Info("http engine running...")
+		}
+	}()
 }
 
 // StartService 启动服务
