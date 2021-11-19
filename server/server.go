@@ -29,8 +29,8 @@ func Run() {
 	go func() {
 		logger.Info("http engine starting...")
 		if err := Instance.HttpEngine.Run("127.0.0.1:9955"); err != nil {
-			logger.Fatal()
-		}else {
+			logger.Fatal(err)
+		} else {
 			logger.Info("http engine running...")
 		}
 	}()
