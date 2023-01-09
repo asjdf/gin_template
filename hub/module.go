@@ -1,4 +1,4 @@
-package server
+package hub
 
 import (
 	"fmt"
@@ -43,23 +43,24 @@ type Module interface {
 }
 
 // RegisterModule - 向全局添加 Module
-func RegisterModule(instance Module) {
-	mod := instance.GetModuleInfo()
+func RegisterModule(instances ...Module) {
+	for _, instance := range instances {
+		mod := instance.GetModuleInfo()
 
-	if mod.ID == "" {
-		panic("module ID missing")
-	}
-	if mod.Instance == nil {
-		panic("missing ModuleInfo.Instance")
-	}
+		if mod.ID == "" {
+			panic("module ID missing")
+		}
+		if mod.Instance == nil {
+			panic("missing ModuleInfo.Instance")
+		}
 
-	modulesMu.Lock()
-	defer modulesMu.Unlock()
-
-	if _, ok := modules[string(mod.ID)]; ok {
-		panic(fmt.Sprintf("module already registered: %s", mod.ID))
+		modulesMu.Lock()
+		if _, ok := modules[string(mod.ID)]; ok {
+			panic(fmt.Sprintf("module already registered: %s", mod.ID))
+		}
+		modules[string(mod.ID)] = mod
+		modulesMu.Unlock()
 	}
-	modules[string(mod.ID)] = mod
 }
 
 // GetModule - 获取一个已注册的 Module 的 ModuleInfo

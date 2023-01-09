@@ -1,46 +1,39 @@
 package pong
 
 import (
-	"gin_template/server"
+	"gin_template/hub"
 	"github.com/gin-gonic/gin"
 	"sync"
 )
 
-func init() {
-	instance = &pong{}
-	server.RegisterModule(instance)
+type Mod struct {
 }
 
-var instance *pong
-
-type pong struct {
-}
-
-func (m *pong) GetModuleInfo() server.ModuleInfo {
-	return server.ModuleInfo{
-		ID:       "internal.pong",
-		Instance: instance,
+func (m *Mod) GetModuleInfo() hub.ModuleInfo {
+	return hub.ModuleInfo{
+		ID:       "internal.ping",
+		Instance: m,
 	}
 }
 
-func (m *pong) Init() {
+func (m *Mod) Init() {
 	// 初始化过程
 	// 在此处可以进行 Module 的初始化配置
 	// 如配置读取
 }
 
-func (m *pong) PostInit() {
+func (m *Mod) PostInit() {
 	// 第二次初始化
 	// 再次过程中可以进行跨Module的动作
 	// 如通用数据库等等
 }
 
-func (m *pong) Serve(server *server.Server) {
+func (m *Mod) Serve(server *hub.Server) {
 	// 注册服务函数部分
 	server.HttpEngine.GET("/ping", handlePingPong)
 }
 
-func (m *pong) Start(server *server.Server) {
+func (m *Mod) Start(server *hub.Server) {
 	// 此函数会新开携程进行调用
 	// ```go
 	// 		go exampleModule.Start()
@@ -50,7 +43,7 @@ func (m *pong) Start(server *server.Server) {
 	// 如http服务器等等
 }
 
-func (m *pong) Stop(server *server.Server, wg *sync.WaitGroup) {
+func (m *Mod) Stop(server *hub.Server, wg *sync.WaitGroup) {
 	// 别忘了解锁
 	defer wg.Done()
 	// 结束部分
@@ -61,7 +54,7 @@ func (m *pong) Stop(server *server.Server, wg *sync.WaitGroup) {
 
 func handlePingPong(c *gin.Context) {
 	c.JSON(200, gin.H{
-		"msg": "pong",
+		"msg":        "pong",
 		"User-Agent": c.GetHeader("User-Agent"),
 	})
 }

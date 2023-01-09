@@ -1,4 +1,4 @@
-package server
+package hub
 
 import (
 	"github.com/gin-gonic/gin"
@@ -12,11 +12,10 @@ type Server struct {
 	HttpEngine *gin.Engine
 }
 
-var logger = logrus.WithField("server", "internal")
+var logger = logrus.WithField("hub", "internal")
 
 // Init 快速初始化
 func Init() {
-	gin.SetMode(gin.ReleaseMode)
 	httpEngine := gin.New()
 	httpEngine.Use(ginRequestLog(), gin.Recovery())
 	Instance = &Server{
@@ -63,7 +62,6 @@ func StartService() {
 }
 
 // Stop 停止所有服务
-// 调用此函数并不会使Bot离线
 func Stop() {
 	logger.Warn("stopping ...")
 	wg := sync.WaitGroup{}
